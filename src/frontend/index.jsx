@@ -7,7 +7,7 @@ import { widget } from '@forge/dashboards-bridge';
 const TITLE_FIELD = 'widgetTitle';
 
 widget.setPreviewConfig({
-  [TITLE_FIELD]: 'Sample Title'
+  [TITLE_FIELD]: 'Open-Source Idea Title'
 });
 
 export const View = () => {
