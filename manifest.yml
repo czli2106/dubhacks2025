@@ -1,27 +1,31 @@
 modules:
-  jira:dashboardGadget:
-    - key: dubhacks2025open-dashboards-widget-pie-chart
+  jira:projectPage:
+    - key: dubhacks2025open-project-page
       title: dubhacks2025open
-      description: A new dashboards widget
+      description: A new project page inside Jira
       thumbnail: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
       resource: main-resource
       render: native
       resolver:
         function: resolver
-      edit:
-        resource: edit-resource
-        render: native
+
   function:
     - key: resolver
       handler: index.handler
+
 resources:
   - key: main-resource
     path: src/frontend/index.jsx
-  - key: edit-resource
-    path: src/frontend/edit.jsx
+
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+
 app:
   runtime:
     name: nodejs22.x
     memoryMB: 256
     architecture: arm64
   id: ari:cloud:ecosystem::app/4fa2b53e-c954-410c-8e42-59d61a50ea5d
+
