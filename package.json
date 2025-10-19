@@ -5,6 +5,7 @@
   "link": true,
   "version": "1.0.10",
   "main": "index.js",
+  "type": "module",
   "license": "MIT",
   "private": true,
   "scripts": {

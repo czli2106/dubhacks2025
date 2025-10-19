@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import { retrieveGitHubRepoData } from './github_retrieve.js';
+import { fetchGitHubRepoData } from './github_retrieve.js';
 
 const resolver = new Resolver();
 
@@ -33,12 +33,14 @@ resolver.define('getGitHubRepoData', async (req) => {
     }
 
     console.log(`Loading GitHub data for ${owner}/${repo}`);
-    const data = await retrieveGitHubRepoData(owner, repo, accessToken);
+    const data = await fetchGitHubRepoData(owner, repo, { accessToken });
     
     return {
       success: true,
-      issuesAndPRs: data.issuesAndPRs,
-      markdownFiles: data.markdownFiles
+      prs: data.prs,
+      issues: data.issues,
+      markdownFiles: data.markdownFiles,
+      total: data.all.length
     };
   } catch (error) {
     console.error('Error in getGitHubRepoData resolver:', error);
