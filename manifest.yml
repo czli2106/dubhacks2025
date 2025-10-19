@@ -1,5 +1,5 @@
 modules:
-  dashboards:widget:
+  jira:dashboardGadget:
     - key: dubhacks2025open-dashboards-widget-pie-chart
       title: dubhacks2025open
       description: A new dashboards widget
