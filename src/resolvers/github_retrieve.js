@@ -1,5 +1,5 @@
-import { GitHubIssuesLoader } from '@langchain/community/document_loaders/github';
-import { GithubFileLoader } from '@langchain/community/document_loaders/github';
+import { GitHubIssuesLoader } from '@langchain/community/document_loaders/web/github';
+import { GithubFileLoader } from '@langchain/community/document_loaders/web/github';
 
 /**
  * Helper function to load GitHub issues and PRs combined
