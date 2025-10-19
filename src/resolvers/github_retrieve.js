@@ -1,5 +1,23 @@
-import { Document } from "@langchain/core/documents";
 import { AsyncCaller } from "@langchain/core/utils/async_caller";
+
+/**
+ * Builds the lightweight document structure we use inside the resolver. We
+ * previously relied on LangChain's `Document` class, but Forge environments
+ * occasionally struggled to bundle that constructor which resulted in runtime
+ * errors. Returning a plain object keeps the data flexible and avoids those
+ * issues while still matching the shape expected by downstream analysis
+ * helpers.
+ *
+ * @param {string} pageContent - Markdown-renderable text describing the entity.
+ * @param {Object} metadata - Machine-readable fields such as number, state, etc.
+ * @returns {{pageContent: string, metadata: Object}}
+ */
+function buildGitHubDocument(pageContent, metadata = {}) {
+  return {
+    pageContent,
+    metadata
+  };
+}
 
 /**
  * Parses a GitHub URL to extract owner and repository name
@@ -15,7 +33,7 @@ function parseGitHubUrl(url) {
 }
 
 /**
- * Fetches pull requests from a GitHub repository and converts them to Documents
+ * Fetches pull requests from a GitHub repository and converts them to document-like objects
  * @param {string} ownerOrUrl - Repository owner OR GitHub URL (e.g., 'langchain-ai' or 'https://github.com/langchain-ai/langchain')
  * @param {string} repo - Repository name (ignored if ownerOrUrl is a URL)
  * @param {Object} options - Configuration options
@@ -24,7 +42,7 @@ function parseGitHubUrl(url) {
  * @param {number} options.perPage - Results per page (default: 100, max: 100)
  * @param {number} options.maxPages - Maximum number of pages to fetch (default: unlimited)
  * @param {string} options.apiUrl - GitHub API URL (default: 'https://api.github.com')
- * @returns {Promise<Document[]>} Array of Documents containing PR data
+ * @returns {Promise<Object[]>} Array of lightweight document objects containing PR data
  */
 export async function fetchGitHubPRs(ownerOrUrl, repo, options = {}) {
   // Parse URL if provided, otherwise use owner/repo format
@@ -98,18 +116,15 @@ ${pr.body || 'No description provided'}
 **Head Branch:** ${pr.head.ref}
 `;
 
-      documents.push(new Document({
-        pageContent: content,
-        metadata: {
-          source: pr.html_url,
-          type: 'pull_request',
-          number: pr.number,
-          state: pr.state,
-          author: pr.user.login,
-          created_at: pr.created_at,
-          updated_at: pr.updated_at,
-          repository: `${owner}/${actualRepo}`
-        }
+      documents.push(buildGitHubDocument(content, {
+        source: pr.html_url,
+        type: 'pull_request',
+        number: pr.number,
+        state: pr.state,
+        author: pr.user.login,
+        created_at: pr.created_at,
+        updated_at: pr.updated_at,
+        repository: `${owner}/${actualRepo}`
       }));
     }
 
@@ -123,7 +138,7 @@ ${pr.body || 'No description provided'}
 }
 
 /**
- * Fetches issues from a GitHub repository and converts them to Documents
+ * Fetches issues from a GitHub repository and converts them to document-like objects
  * @param {string} ownerOrUrl - Repository owner OR GitHub URL (e.g., 'langchain-ai' or 'https://github.com/langchain-ai/langchain')
  * @param {string} repo - Repository name (ignored if ownerOrUrl is a URL)
  * @param {Object} options - Configuration options
@@ -132,7 +147,7 @@ ${pr.body || 'No description provided'}
  * @param {number} options.perPage - Results per page (default: 100, max: 100)
  * @param {number} options.maxResults - Maximum total results to fetch (default: unlimited)
  * @param {string} options.apiUrl - GitHub API URL (default: 'https://api.github.com')
- * @returns {Promise<Document[]>} Array of Documents containing issue data
+ * @returns {Promise<Object[]>} Array of lightweight document objects containing issue data
  */
 export async function fetchGitHubIssues(ownerOrUrl, repo, options = {}) {
   // Parse URL if provided, otherwise use owner/repo format
@@ -212,19 +227,16 @@ ${issue.body || 'No description provided'}
 **Comments:** ${issue.comments}
 `;
 
-      documents.push(new Document({
-        pageContent: content,
-        metadata: {
-          source: issue.html_url,
-          type: 'issue',
-          number: issue.number,
-          state: issue.state,
-          author: issue.user.login,
-          labels: issue.labels.map(l => l.name),
-          created_at: issue.created_at,
-          updated_at: issue.updated_at,
-          repository: `${owner}/${repo}`
-        }
+      documents.push(buildGitHubDocument(content, {
+        source: issue.html_url,
+        type: 'issue',
+        number: issue.number,
+        state: issue.state,
+        author: issue.user.login,
+        labels: issue.labels.map(l => l.name),
+        created_at: issue.created_at,
+        updated_at: issue.updated_at,
+        repository: `${owner}/${actualRepo}`
       }));
     }
 
@@ -246,7 +258,7 @@ ${issue.body || 'No description provided'}
  * @param {string} options.branch - Branch to fetch from (default: 'main')
  * @param {number} options.maxResults - Maximum total results to fetch (default: unlimited)
  * @param {string} options.apiUrl - GitHub API URL (default: 'https://api.github.com')
- * @returns {Promise<Document[]>} Array of Documents containing markdown files
+ * @returns {Promise<Object[]>} Array of lightweight document objects containing markdown files
  */
 export async function fetchGitHubMarkdownFiles(ownerOrUrl, repo, options = {}) {
   // Parse URL if provided, otherwise use owner/repo format
@@ -317,18 +329,15 @@ export async function fetchGitHubMarkdownFiles(ownerOrUrl, repo, options = {}) {
 ${fileContent}
 `;
 
-        documents.push(new Document({
-          pageContent: content,
-          metadata: {
-            source: item.html_url,
-            type: 'markdown_file',
-            path: item.path,
-            name: item.name,
-            size: item.size,
-            sha: item.sha,
-            repository: `${owner}/${repo}`,
-            branch: branch
-          }
+        documents.push(buildGitHubDocument(content, {
+          source: item.html_url,
+          type: 'markdown_file',
+          path: item.path,
+          name: item.name,
+          size: item.size,
+          sha: item.sha,
+          repository: `${owner}/${actualRepo}`,
+          branch: branch
         }));
       } else if (item.type === 'dir') {
         // Recursively fetch subdirectory contents

@@ -26,7 +26,6 @@ export const View = () => {
   const [createConfluencePages, setCreateConfluencePages] = useState(true);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     if (!githubUrl.trim()) return;
 
     setIsLoading(true);

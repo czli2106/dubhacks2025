@@ -1,6 +1,14 @@
-import Resolver from '@forge/resolver';
+import ResolverPackage from '@forge/resolver';
 import { fetchGitHubRepoData } from './github_retrieve.js';
 
+/**
+ * Forge's resolver library is packaged as CommonJS which means that importing
+ * it from an ES module yields an object that includes both the factory helpers
+ * and the actual Resolver class. In some Forge bundling scenarios the default
+ * export is wrapped, so we defensively unwrap it here to avoid the
+ * "out is not a constructor" error.
+ */
+const Resolver = typeof ResolverPackage === 'function' ? ResolverPackage : ResolverPackage.default;
 const resolver = new Resolver();
 
 resolver.define('getPieChartData', (req) => {
