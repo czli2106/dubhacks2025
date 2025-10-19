@@ -25,7 +25,3 @@ app:
     memoryMB: 256
     architecture: arm64
   id: ari:cloud:ecosystem::app/4fa2b53e-c954-410c-8e42-59d61a50ea5d
-  egress:
-    - name: github-api
-      url: https://api.github.com
-      type: api
