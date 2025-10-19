@@ -1,0 +1,26 @@
+{
+  "name": "dashboards-widget-ui-kit",
+  "title": "Forge Dashboards Widget UI Kit",
+  "description": "A Forge app that demonstrates how to create a dashboard widget with UI Kit.",
+  "link": true,
+  "version": "1.0.10",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src/**/* || npm run --silent hook-errors",
+    "hook-errors": "echo '\\x1b[31mThe build failed because a Forge UI hook is being used incorrectly. Forge UI hooks follow the same rules as React Hooks but have their own API definitions. See the Forge documentation for details on how to use Forge UI hooks.\n' && exit 1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "dependencies": {
+    "@forge/bridge": "5.6.0",
+    "@forge/dashboards-bridge": "0.1.5",
+    "@forge/hooks": "0.1.5",
+    "@forge/react": "11.5.0",
+    "@forge/resolver": "1.7.0",
+    "react": "^18.2.0"
+  }
+}
